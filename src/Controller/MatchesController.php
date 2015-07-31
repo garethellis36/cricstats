@@ -17,11 +17,25 @@ class MatchesController extends AppController
 
     private $filters = [];
 
+    private $sortField;
+
+    private $sortDirection;
+
     private function processFilters()
     {
         $this->filters = [];
 
         foreach ($this->request->query as $model => $conditions) {
+
+            if ($model == "sort") {
+                $this->sortField = $conditions;
+                continue;
+            }
+
+            if ($model == "direction") {
+                $this->sortDirection = $conditions;
+                continue;
+            }
 
             foreach ($conditions as $field => $value) {
                 if ($value == "") {
@@ -38,8 +52,6 @@ class MatchesController extends AppController
             }
 
         }
-
-        return $this->filters;
     }
 
     private $contain = ['Clubs', 'Teams', 'Competitions', 'Formats', 'DismissalModes'];
@@ -51,11 +63,21 @@ class MatchesController extends AppController
      */
     public function index()
     {
+        $this->processFilters();
+
         $this->layout = "matches";
+
+        $order = ["Matches.season DESC", "Matches.date DESC", "Matches.id DESC"];
+
+        if ($this->sortDirection && $this->sortField) {
+            $order = [
+                $this->sortField . " " . strtoupper($this->sortDirection)
+            ];
+        }
 
         $matches = $this->Matches->find("all", [
             'contain' => $this->contain
-        ])->where($this->processFilters())->order(["Matches.season DESC", "Matches.date DESC", "Matches.id DESC"]);
+        ])->where($this->filters)->order($order);
 
         $this->set('matches', $matches->map(function ($row) {
             $row->bowling_econ = CricketUtility::calculateBowlingEconomy($row->bowling_overs, $row->bowling_runs);
