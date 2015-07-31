@@ -71,10 +71,14 @@ class ImporterShell extends Shell
         }
 
         $matches = $this->Matches->newEntities($data, ["validate" => false]);
-        foreach ($matches as $match ) {
-            if ($this->Matches->save($match)) {
-                $this->out($match->season . " - " . $match->opposition . " saved");
-                continue;
+        foreach ($matches as $k => $match ) {
+            try {
+                if ($this->Matches->save($match)) {
+                    $this->out($match->season . " - " . $match->opposition . " saved");
+                    continue;
+                }
+            } catch (\Exception $e) {
+                $this->err("Row " . $k . $match->season . " - " . $match->opposition . " not saved");
             }
         }
 
