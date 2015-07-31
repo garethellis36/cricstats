@@ -5,3 +5,4 @@
 stats.csv
 .idea/*
 php_errors.log
+composer.lock
