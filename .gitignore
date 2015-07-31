@@ -3,3 +3,5 @@
 /logs/*
 /config/config.yml
 stats.csv
+.idea/*
+php_errors.log
