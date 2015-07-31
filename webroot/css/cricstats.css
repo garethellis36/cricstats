@@ -1,0 +1,21 @@
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+}
+
+th, td {
+    padding: 5px 15px;
+}
+
+.margin-bottom {
+    margin-bottom: 15px;
+}
+
+table {
+    border: none;
+    border-collapse: collapse;
+}
+
+tr {
+    border-bottom: 1px solid black;
+}
