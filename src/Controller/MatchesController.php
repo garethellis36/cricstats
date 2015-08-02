@@ -84,12 +84,44 @@ class MatchesController extends AppController
             return $row;
         }));
 
+        $totalMatches = $matches->count();
+
+        $this->set("dismissals", $this->getDismissalStats($matches));
+
         $this->setBattingStats($matches);
         $this->setBowlingStats($matches);
+        $this->setFieldingStats($matches);
+
+        $this->set(compact("totalMatches"));
 
         $this->set('_serialize', ['matches']);
 
         $this->populateFilters();
+    }
+
+    private function getDismissalStats(Query $matches)
+    {
+        $dismissals = [];
+        foreach ($matches as $match) {
+            if (!$match->has("dismissal_mode")) {
+                continue;
+            }
+            if (isset($dismissals[$match->dismissal_mode->name])) {
+                $dismissals[$match->dismissal_mode->name]++;
+                continue;
+            }
+            $dismissals[$match->dismissal_mode->name] = 1;
+        }
+        ksort($dismissals);
+        return $dismissals;
+    }
+
+    private function setFieldingStats (Query $matches)
+    {
+        $this->set("catches", $this->calculateTotal($matches, "catches"));
+        $this->set("droppedCatches", $this->calculateTotal($matches, "dropped_catches"));
+        $this->set("runOuts", $this->calculateTotal($matches, "run_outs"));
+        $this->set("stumpings", $this->calculateTotal($matches, "stumpings"));
     }
 
     private function populateFilters()

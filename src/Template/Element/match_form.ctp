@@ -30,6 +30,10 @@
     echo $this->Form->input('bowling_maidens');
     echo $this->Form->input('bowling_runs');
     echo $this->Form->input('bowling_wickets');
+    echo $this->Form->input('catches');
+    echo $this->Form->input('dropped_catches');
+    echo $this->Form->input('run_outs');
+    echo $this->Form->input('stumpings');
     echo $this->Form->input('notes');
     ?>
 </fieldset>
