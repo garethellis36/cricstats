@@ -18,6 +18,6 @@ class FieldingStats extends AbstractMigration
         $t->addColumn("catches", "integer", ["default" => 0])
             ->addColumn("dropped_catches", "integer", ["default" => 0])
             ->addColumn("run_outs", "integer", ["default" => 0])
-            ->addColumn("stumpings", "integer", ["default" => 0]);
+            ->addColumn("stumpings", "integer", ["default" => 0])->save();
     }
 }

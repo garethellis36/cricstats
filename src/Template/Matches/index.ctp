@@ -38,6 +38,7 @@ echo $this->Form->end();
                 <th><?= $this->Paginator->sort('opposition') ?></th>
                 <th><?= $this->Paginator->sort('competition_id') ?></th>
                 <th><?= $this->Paginator->sort('format_id') ?></th>
+                <th><?= $this->Paginator->sort('batting_no') ?></th>
                 <th><?= $this->Paginator->sort('batting_runs', "Runs") ?></th>
                 <th><?= $this->Paginator->sort('dismissal_mode_id', "How out") ?></th>
                 <th><?= $this->Paginator->sort('bowling_wickets', "Bowling figures") ?></th>
@@ -63,16 +64,17 @@ echo $this->Form->end();
                 <td>
                     <?= $match->has('format') ? $match->format->name : '' ?>
                 </td>
+                <td><?= $match->dnb ? "-" : $match->batting_no ?></td>
                 <td>
                     <?php
-                    if ($match->batting_runs || $match->batting_runs === '0') {
+                    if ($match->dnb) {
+                        echo "dnb";
+                    }
+                    else {
                         echo $match->batting_runs;
                         if ($match->has('dismissal_mode') && $match->dismissal_mode->not_out) {
                             echo "*";
                         }
-                    } else {
-
-                        echo "dnb";
                     }
                     ?>
                 </td>
