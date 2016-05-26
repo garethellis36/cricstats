@@ -201,7 +201,7 @@ echo $this->Form->end();
                 <tbody>
                 <td><?= $totalOvers ?></td>
                 <td><?= $totalMaidens ?></td>
-                <td><?= $totalRuns ?></td>
+                <td><?= $totalRunsConceded ?></td>
                 <td><?= $totalWickets ?></td>
                 <td><?= $bestBowling->bowling_wickets . "-" . $bestBowling->bowling_runs ?></td>
                 <td><?= $fiveFors ?></td>
