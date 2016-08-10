@@ -10,7 +10,8 @@
         "mobiledetect/mobiledetectlib": "2.*",
         "cakephp/migrations": "~1.0",
         "cakephp/plugin-installer": "*",
-        "league/csv": "^7.1@dev"
+        "league/csv": "^7.1@dev",
+        "garethellis/cricket-stats-helper": "^1.0"
     },
     "require-dev": {
         "psy/psysh": "@stable",

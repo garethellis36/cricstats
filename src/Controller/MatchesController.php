@@ -3,8 +3,10 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use App\Lib\CricketUtility;
+use Cake\Error\Debugger;
 use \Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use Garethellis\CricketStatsHelper\CricketStatsHelper;
 
 
 /**
@@ -14,6 +16,17 @@ use Cake\ORM\TableRegistry;
  */
 class MatchesController extends AppController
 {
+    /**
+     * @var CricketStatsHelper
+     */
+    private $statsHelper;
+
+    public function initialize()
+    {
+        parent::initialize();
+
+        $this->statsHelper = new CricketStatsHelper();
+    }
 
     private $filters = [];
 
@@ -80,7 +93,12 @@ class MatchesController extends AppController
         ])->where($this->filters)->order($order);
 
         $this->set('matches', $matches->map(function ($row) {
-            $row->bowling_econ = CricketUtility::calculateBowlingEconomy($row->bowling_overs, $row->bowling_runs);
+            if ($row->bowling_overs) {
+                $row->bowling_econ = $this->statsHelper->calculateBowlingEconomy($row->bowling_overs, (int)$row->bowling_runs);
+            } else {
+                $row->bowling_econ = null;
+            }
+
             return $row;
         }));
 
@@ -193,7 +211,7 @@ class MatchesController extends AppController
         $innings = $this->getTotalInnings();
         $notOuts = $this->getTotalNotOuts();
 
-        $battingAverage = CricketUtility::calculateBattingAverage($totalRuns, $innings, $notOuts);
+        $battingAverage = $this->statsHelper->calculateBattingAverage((int)$totalRuns, (int)$innings, (int)$notOuts);
 
         $highScore = $this->getHighestScore($matches);
         $fifties = $this->getNumberFifties();
@@ -217,8 +235,9 @@ class MatchesController extends AppController
         $totalRunsConceded = $this->calculateTotal($matches, "bowling_runs");
         $totalWickets = $this->calculateTotal($matches, "bowling_wickets");
 
-        $bowlingEcon = CricketUtility::calculateBowlingEconomy($totalOvers, $totalRunsConceded);
-        $bowlingAverage = CricketUtility::calculateBowlingAverage($totalRunsConceded, $totalWickets);
+        $bowlingEcon = $this->statsHelper->calculateBowlingEconomy($totalOvers, (int)$totalRunsConceded);
+        $bowlingAverage = $this->statsHelper->calculateBowlingAverage((int)$totalRunsConceded, (int)$totalWickets);
+        $strikeRate = $this->statsHelper->calculateStrikeRate($totalOvers, (int)$totalWickets);
 
         $fiveFors = $this->calculateNumberFiveFors();
 
@@ -231,6 +250,7 @@ class MatchesController extends AppController
             "totalWickets",
             "bowlingEcon",
             "bowlingAverage",
+            "strikeRate",
             "fiveFors",
             "bestBowling"
         ));
@@ -252,9 +272,9 @@ class MatchesController extends AppController
             if (empty($match->bowling_overs)) {
                 continue;
             }
-            $totalBalls += CricketUtility::convertOversToBalls($match->bowling_overs);
+            $totalBalls += $this->statsHelper->convertOversToBalls($match->bowling_overs);
         }
-        return CricketUtility::convertBallsToOvers($totalBalls);
+        return $this->statsHelper->convertBallsToOvers($totalBalls);
     }
 
     private function calculateTotal(Query $matches, $field)

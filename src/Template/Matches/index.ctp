@@ -91,7 +91,7 @@ echo $this->Form->end();
                     }
                     ?>
                 </td>
-                <td><?= $match->bowling_econ ?></td>
+                <td><?= number_format($match->bowling_econ,2) ?></td>
                 <td>
                     <?= (empty($match->catches) ? "0" : $match->catches) ?>
                     /
@@ -160,7 +160,7 @@ echo $this->Form->end();
                         <td><?= $notOuts ?></td>
                         <td><?= $highScore->batting_runs . ($highScore->dismissal_mode->not_out ? "*" : "") ?></td>
                         <td><?= $totalRuns ?></td>
-                        <td><?= $battingAverage ?></td>
+                        <td><?= number_format($battingAverage,2) ?></td>
                         <td><?= $fifties ?></td>
                         <td><?= $hundreds ?></td>
                     </tr>
@@ -197,6 +197,7 @@ echo $this->Form->end();
                     <th>5WI</th>
                     <th>Average</th>
                     <th>Econ.</th>
+                    <th>SR</th>
                 </thead>
                 <tbody>
                 <td><?= $totalOvers ?></td>
@@ -205,8 +206,9 @@ echo $this->Form->end();
                 <td><?= $totalWickets ?></td>
                 <td><?= $bestBowling->bowling_wickets . "-" . $bestBowling->bowling_runs ?></td>
                 <td><?= $fiveFors ?></td>
-                <td><?= $bowlingAverage ?></td>
-                <td><?= $bowlingEcon ?></td>
+                <td><?= number_format($bowlingAverage,2) ?></td>
+                <td><?= number_format($bowlingEcon,2) ?></td>
+                <td><?= number_format($strikeRate,2) ?></td>
                 </tbody>
             </table>
         <?php endif; ?>
