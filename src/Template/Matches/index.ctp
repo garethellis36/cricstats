@@ -25,7 +25,7 @@ echo $this->Form->end();
 
 <div class="margin-bottom">
 
-    <?php if ($matches->count() == 0): ?>
+    <?php if (iterator_count($matches) == 0): ?>
         <p>No matches found.</p>
     <?php else: ?>
 

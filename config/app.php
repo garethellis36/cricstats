@@ -1,9 +1,4 @@
 <?php
-use Symfony\Component\Yaml\Yaml;
-if (!file_exists(ROOT . DS . 'config/config.yml')) {
-    throw new Exception("Config file not found");
-}
-$config = Yaml::parse(file_get_contents(ROOT . DS . 'config/config.yml'));
 
 return [
     /**
@@ -216,18 +211,15 @@ return [
     'Datasources' => [
         'default' => [
             'className' => 'Cake\Database\Connection',
-            'driver' => 'Cake\Database\Driver\Mysql',
+            'driver' => 'Cake\Database\Driver\Sqlite',
             'persistent' => false,
-            'host' => $config["mysql"]["hostname"],
             /**
              * CakePHP will use the default DB port based on the driver selected
              * MySQL on MAMP uses port 8889, MAMP users will want to uncomment
              * the following line and set the port accordingly
              */
             //'port' => 'nonstandard_port_number',
-            'username' => $config["mysql"]["username"],
-            'password' => $config["mysql"]["password"],
-            'database' => $config["mysql"]["database"],
+            'database' => realpath(__DIR__ . '/../cricstats.db'),
             'encoding' => 'utf8',
             'timezone' => 'UTC',
             'cacheMetadata' => true,

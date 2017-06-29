@@ -78,7 +78,7 @@ class MatchesController extends AppController
     {
         $this->processFilters();
 
-        $this->layout = "matches";
+        $this->viewBuilder()->setLayout("matches");
 
         $order = ["Matches.season DESC", "Matches.date DESC", "Matches.id DESC"];
 
