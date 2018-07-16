@@ -45,6 +45,7 @@ echo $this->Form->end();
                 <th>Econ.</th>
                 <th>Catches / Drops</th>
                 <th>Run outs / Stumpings</th>
+                <th style="width:200px;">Comments</th>
                 <th class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
@@ -91,7 +92,7 @@ echo $this->Form->end();
                     }
                     ?>
                 </td>
-                <td><?= number_format($match->bowling_econ,2) ?></td>
+                <td><?= $match->bowling_overs ? number_format($match->bowling_econ,2)  : '-'?></td>
                 <td>
                     <?= (empty($match->catches) ? "0" : $match->catches) ?>
                     /
@@ -101,6 +102,9 @@ echo $this->Form->end();
                     <?= (empty($match->run_outs) ? "0" : $match->run_outs) ?>
                     /
                     <?= (empty($match->stumpings) ? "0" : $match->stumpings) ?>
+                </td>
+                <td>
+                    <?= nl2br($match->notes) ?>
                 </td>
                 <td class="actions">
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $match->id]) ?>
