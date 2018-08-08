@@ -1,10 +1,9 @@
 <?php
+
 namespace App\Controller;
 
-use App\Controller\AppController;
-use App\Lib\CricketUtility;
-use Cake\Error\Debugger;
-use \Cake\ORM\Query;
+use Cake\Collection\Collection;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Garethellis\CricketStatsHelper\CricketStatsHelper;
 
@@ -84,12 +83,12 @@ class MatchesController extends AppController
 
         if ($this->sortDirection && $this->sortField) {
             $order = [
-                $this->sortField . " " . strtoupper($this->sortDirection)
+                $this->sortField . " " . strtoupper($this->sortDirection),
             ];
         }
 
         $matches = $this->Matches->find("all", [
-            'contain' => $this->contain
+            'contain' => $this->contain,
         ])->where($this->filters)->order($order);
 
         $this->set('matches', $matches->map(function ($row) {
@@ -109,6 +108,42 @@ class MatchesController extends AppController
         $this->setBattingStats($matches);
         $this->setBowlingStats($matches);
         $this->setFieldingStats($matches);
+
+        $bestBatting = $matches->all()
+            ->filter(function ($innings) {
+                return !$innings->dnb;
+            })
+            ->toArray();
+
+        usort($bestBatting, function ($a, $b) {
+            $score = $b->batting_runs <=> $a->batting_runs;
+            if ($score !== 0) {
+                return $score;
+            }
+
+            return $b->dismissal_mode->not_out <=> $a->dismissal_mode->not_out;
+        });
+
+        $bestBatting = new Collection($bestBatting);
+        $this->set("bestBatting", $bestBatting->take(20));
+
+        $bestBowling = $matches->all()
+            ->filter(function ($figures) {
+                return $figures->bowling_overs !== null;
+            })
+            ->toArray();
+
+        usort($bestBowling, function ($a, $b) {
+            $wickets = $b->bowling_wickets <=> $a->bowling_wickets;
+            if ($wickets !== 0) {
+                return $wickets;
+            }
+
+            return $a->bowling_runs <=> $b->bowling_runs;
+        });
+
+        $bestBowling = new Collection($bestBowling);
+        $this->set("bestBowlingList", $bestBowling->take(20));
 
         $this->set(compact("totalMatches"));
 
@@ -134,7 +169,7 @@ class MatchesController extends AppController
         return $dismissals;
     }
 
-    private function setFieldingStats (Query $matches)
+    private function setFieldingStats(Query $matches)
     {
         $this->set("catches", $this->calculateTotal($matches, "catches"));
         $this->set("droppedCatches", $this->calculateTotal($matches, "dropped_catches"));
@@ -147,29 +182,29 @@ class MatchesController extends AppController
         $this->set("filters", [
             "Matches.season" => [
                 "type" => "select",
-                "empty" => "All seasons"
+                "empty" => "All seasons",
             ],
             "Matches.club_id" => [
                 "type" => "select",
-                "empty" => "All clubs"
+                "empty" => "All clubs",
             ],
             "Matches.team_id" => [
                 "type" => "select",
-                "empty" => "All teams"
+                "empty" => "All teams",
             ],
             "Matches.competition_id" => [
                 "type" => "select",
-                "empty" => "All competitions"
+                "empty" => "All competitions",
             ],
             "Matches.format_id" => [
                 "type" => "select",
-                "empty" => "All formats"
+                "empty" => "All formats",
             ],
             "Competitions.competitive" => [
                 "type" => "checkbox",
                 "label" => "Competitive fixtures only",
-                "hiddenField" => false
-            ]
+                "hiddenField" => false,
+            ],
         ]);
 
         $this->populateFilterDropdowns();
@@ -197,7 +232,7 @@ class MatchesController extends AppController
         $formats = $formats->find("all")->combine("id", "name");
 
         $this->set(compact(
-           "seasons",
+            "seasons",
             "clubs",
             "teams",
             "competitions",
@@ -289,7 +324,7 @@ class MatchesController extends AppController
     private function calculateNumberFiveFors()
     {
         return $this->Matches->find("all", ["contain" => $this->contain])->where(array_merge($this->filters, [
-            "Matches.bowling_wickets >= 5"
+            "Matches.bowling_wickets >= 5",
         ]))->count();
     }
 
@@ -297,14 +332,14 @@ class MatchesController extends AppController
     {
         return $this->Matches->find("all", ["contain" => $this->contain])->where(array_merge($this->filters, [
             "Matches.batting_runs >= 50",
-            "Matches.batting_runs < 100"
+            "Matches.batting_runs < 100",
         ]))->count();
     }
 
     private function getNumberHundreds()
     {
         return $this->Matches->find("all", ["contain" => $this->contain])->where(array_merge($this->filters, [
-            "Matches.batting_runs >= 100"
+            "Matches.batting_runs >= 100",
         ]))->count();
     }
 
@@ -366,7 +401,7 @@ class MatchesController extends AppController
     public function edit($id = null)
     {
         $match = $this->Matches->get($id, [
-            'contain' => []
+            'contain' => [],
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $match = $this->Matches->patchEntity($match, $this->request->data);

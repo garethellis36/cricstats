@@ -171,6 +171,18 @@ echo $this->Form->end();
                 </tbody>
             </table>
 
+            <h2>Best batting</h2>
+            <ul>
+                <?php foreach ($bestBatting as $innings): ?>
+                    <li>
+                        <?= $innings->batting_runs ?><?= $innings->dismissal_mode->not_out ? "*" : "" ?>
+                        for <?= $innings->club->name . " " . $innings->team->name . " XI" ?>
+                        vs <?= $innings->opposition ?> (<?= $innings->venue ?>),
+                        <?= $innings->season ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+
             <h2>Dismissals</h2>
             <table>
                 <tbody>
@@ -215,6 +227,20 @@ echo $this->Form->end();
                 <td><?= number_format($strikeRate,2) ?></td>
                 </tbody>
             </table>
+
+
+            <h2>Best bowling</h2>
+            <ul>
+                <?php foreach ($bestBowlingList as $figures): ?>
+                    <li>
+                        <?= $figures->bowling_wickets ?>-<?= $figures->bowling_runs ?>
+                        for <?= $figures->club->name . " " . $figures->team->name . " XI" ?>
+                        vs <?= $figures->opposition ?> (<?= $figures->venue ?>),
+                        <?= $figures->season ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+
         <?php endif; ?>
 
     <?php endif; ?>
